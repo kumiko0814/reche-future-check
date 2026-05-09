@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>あなたの未来を、3分で見える化</title>
+<meta property="og:title" content="あなたの未来を、3分で見える化" />
+<meta property="og:description" content="副業を始めた自分と、何もしなかった自分。65歳までの差を、自分の数字で確かめてみてください。" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --pink: #C77F75;
+    --blue: #7AA8C2;
+    --pink-soft: #FBF0EE;
+    --blue-soft: #EDF3F7;
+    --pink-bg: #F5DBD9;
+    --blue-bg: #DEEAEF;
+    --ink: #2C3E50;
+    --sub: #6B7A8F;
+    --bg: #FAFBFC;
+    --card: #FFFFFF;
+    --line: #E0E5EC;
+    --yellow: #FFF8DC;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:24px 18px 80px}
+
+  /* Hero */
+  .hero{text-align:center;padding:32px 12px 24px}
+  .hero .kicker{font-size:11px;letter-spacing:.18em;color:var(--pink);font-weight:700}
+  .hero h1{font-size:clamp(22px,5vw,28px);margin:10px 0 10px;letter-spacing:.02em;line-height:1.5;font-weight:700}
+  .hero .lead{color:var(--sub);font-size:14px;line-height:1.8}
+
+  /* Card */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 20px;margin:16px 0;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+  .card h2{margin:0 0 8px;font-size:17px;letter-spacing:.02em;font-weight:700}
+  .card .sub{color:var(--sub);font-size:13px;margin-bottom:14px;line-height:1.7}
+
+  /* Form */
+  .form-row{margin:14px 0}
+  .form-row label{display:block;font-size:13px;color:var(--ink);font-weight:600;margin-bottom:6px}
+  .form-row input, .form-row select{
+    width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;
+    font-size:16px;background:var(--yellow);color:var(--ink);font-weight:600;
+    -webkit-appearance:none;appearance:none;
+    transition:border-color .15s;
+  }
+  .form-row input:focus, .form-row select:focus{
+    outline:none;border-color:var(--pink);
+  }
+  .form-row .hint{font-size:11px;color:var(--sub);margin-top:4px}
+  .form-row select{
+    background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3e%3cpath fill='%236B7A8F' d='M6 8L0 0h12z'/%3e%3c/svg%3e");
+    background-repeat:no-repeat;
+    background-position:right 16px center;
+    padding-right:38px;
+  }
+
+  .btn{
+    display:block;width:100%;margin-top:8px;padding:16px;border:none;
+    background:var(--pink);color:#fff;font-size:16px;font-weight:700;
+    border-radius:12px;cursor:pointer;letter-spacing:.05em;
+    transition:background .15s, transform .1s;
+  }
+  .btn:hover{background:#A86A60}
+  .btn:active{transform:translateY(1px)}
+
+  /* Result hidden by default */
+  #result{display:none}
+
+  /* Stat block */
+  .stat-hero{
+    text-align:center;padding:24px 16px;
+    background:linear-gradient(180deg,var(--pink-soft),#fff);
+    border-radius:14px;margin:8px 0;
+    border:1px solid var(--pink-bg);
+  }
+  .stat-hero .label{font-size:13px;color:var(--sub);font-weight:600}
+  .stat-hero .value{font-size:clamp(28px,7vw,40px);color:var(--pink);font-weight:800;letter-spacing:-.02em;margin:6px 0;line-height:1.1}
+  .stat-hero .note{font-size:12px;color:var(--sub)}
+
+  /* Comparison table */
+  table.compare{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+  table.compare th{
+    background:var(--blue-soft);color:var(--ink);font-weight:600;
+    padding:10px 8px;border-bottom:1px solid var(--line);text-align:center;font-size:12px;
+  }
+  table.compare td{
+    padding:10px 8px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;
+  }
+  table.compare td:first-child{text-align:center;font-weight:700;color:var(--ink)}
+  table.compare td.no{background:var(--pink-soft);color:var(--pink);font-weight:600}
+  table.compare td.yes{background:var(--blue-soft);color:var(--blue);font-weight:700}
+  table.compare td.diff{background:var(--yellow);color:var(--pink);font-weight:800}
+
+  /* Chart */
+  .chart-box{position:relative;height:300px;margin-top:14px}
+
+  /* Closing message (no button) */
+  .closing-soft{
+    background:var(--blue-soft);border-radius:14px;padding:24px 22px;margin-top:24px;
+    border-left:3px solid var(--blue);
+  }
+  .closing-soft p{margin:6px 0;font-size:14px;color:var(--ink);line-height:1.85}
+  .closing-soft .lead{font-size:15px;font-weight:700;color:var(--blue);margin-bottom:10px}
+  .closing-soft .sign{
+    margin-top:14px;font-size:11px;color:var(--sub);text-align:right;font-style:italic;
+  }
+
+  .reche-fact{
+    background:var(--pink-soft);border-radius:10px;padding:14px 16px;margin:12px 0;
+    font-size:13px;color:var(--ink);
+  }
+  .reche-fact .ttl{font-weight:700;color:var(--pink);font-size:12px;margin-bottom:6px;letter-spacing:.05em}
+  .reche-fact ul{margin:0;padding-left:18px}
+  .reche-fact li{margin:3px 0;line-height:1.7}
+
+  footer{margin-top:40px;text-align:center;font-size:11px;color:var(--sub);line-height:1.8}
+  footer a{color:var(--sub);text-decoration:underline}
+
+  .scroll-hint{
+    text-align:center;color:var(--sub);font-size:11px;margin:8px 0 2px;
+    letter-spacing:.1em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="kicker">FUTURE SIMULATOR</div>
+    <h1>あなたの未来を、3分で見える化</h1>
+    <p class="lead">副業を始めた自分と、何もしなかった自分。<br>65歳までの差を、あなたの数字で確かめてみてください。</p>
+  </header>
+
+  <!-- 入力フォーム -->
+  <div class="card">
+    <h2>4つの質問に答えるだけ</h2>
+    <p class="sub">数字はあくまで概算です。正確じゃなくても大丈夫。</p>
+
+    <div class="form-row">
+      <label for="age">①現在の年齢</label>
+      <input id="age" type="number" inputmode="numeric" value="38" min="20" max="65" />
+    </div>
+
+    <div class="form-row">
+      <label for="income">②本業の年収（額面）</label>
+      <input id="income" type="number" inputmode="numeric" value="3500000" step="100000" />
+      <div class="hint">パート・会社員・フリーランスの合計</div>
+    </div>
+
+    <div class="form-row">
+      <label for="savings">③現在の貯金額</label>
+      <input id="savings" type="number" inputmode="numeric" value="800000" step="100000" />
+      <div class="hint">預金・現金の合計</div>
+    </div>
+
+    <div class="form-row">
+      <label for="goal">④副業の月収目標（純利益・経費控除後）</label>
+      <select id="goal">
+        <option value="30000">3万円</option>
+        <option value="50000" selected>5万円</option>
+        <option value="100000">10万円</option>
+      </select>
+    </div>
+
+    <button class="btn" onclick="run()">未来を見てみる</button>
+  </div>
+
+  <!-- 結果 -->
+  <div id="result">
+
+    <p class="scroll-hint">— あなたの結果 —</p>
+
+    <!-- 1. 今年すぐ -->
+    <div class="card">
+      <h2>今年すぐ</h2>
+      <p class="sub">副業を始めて、確定申告で経費計上したら…</p>
+      <div class="stat-hero">
+        <div class="label">今年の手元に戻る金額（節税）</div>
+        <div class="value" id="taxBack">+0円</div>
+        <div class="note">※ 1年目の確定申告ボーナス</div>
+      </div>
+    </div>
+
+    <!-- 2. 65歳までの推移 -->
+    <div class="card">
+      <h2>65歳までの貯金推移</h2>
+      <p class="sub">副業しなかった場合（ピンク）と、副業した場合（ブルー）</p>
+      <div class="chart-box"><canvas id="chart"></canvas></div>
+    </div>
+
+    <!-- 3. 年齢別テーブル -->
+    <div class="card">
+      <h2>年齢ごとの差を見る</h2>
+      <p class="sub">5年・10年・20年・65歳での貯金の差</p>
+      <table class="compare">
+        <thead>
+          <tr>
+            <th>年齢</th>
+            <th>副業しない</th>
+            <th>副業する</th>
+            <th>差額</th>
+          </tr>
+        </thead>
+        <tbody id="ageTable"></tbody>
+      </table>
+    </div>
+
+    <!-- 4. Re:che 実数値 -->
+    <div class="card">
+      <div class="reche-fact">
+        <div class="ttl">参考：在宅で取り組むスクール卒業生62名のデータ</div>
+        <ul>
+          <li>6割が毎月15〜20万円以上の利益</li>
+          <li>6割が初月7〜10万円以上の利益</li>
+          <li>6割が半年以内にスクール代をペイ</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- クロージング（押し売りなし） -->
+    <div class="closing-soft">
+      <p class="lead">ここまで触ってみていただけたら、もう半分終わってます。</p>
+      <p>数字の細かい中身や、あなたの状況に合った計画は、<br>
+      個別のトレーニングで一緒に整理していきます。</p>
+      <p>気になることがあれば、いつでもどうぞ。</p>
+      <p class="sign">— Merone プロモーション事業部</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>監修：Merone プロモーション事業部</p>
+    <p>計算根拠：国税庁・財務省・厚労省・総務省 公表値<br>
+    （物価上昇 +2.5%/年・社保料率 段階上昇・2027防衛増税+1% を反映）</p>
+    <p>※本ツールは教育目的の試算です。実際の数字は個人の状況により異なります。</p>
+  </footer>
+
+</div>
+
+<script>
+let chartInstance = null;
+
+function fmt(n) {
+  if (n === 0) return '0円';
+  const sign = n > 0 ? '+' : '−';
+  const abs = Math.abs(Math.round(n));
+  return sign + abs.toLocaleString() + '円';
+}
+
+function fmtPlain(n) {
+  if (n < 0) return '▲' + Math.abs(Math.round(n)).toLocaleString() + '円';
+  return Math.round(n).toLocaleString() + '円';
+}
+
+// 社保料率（年度別）
+function socialRate(year) {
+  if (year >= 2030) return 0.1620;
+  if (year >= 2028) return 0.1580;
+  if (year >= 2027) return 0.1545;
+  if (year >= 2026) return 0.1523;
+  return 0.1500;
+}
+
+// 累進所得税 + 復興税
+function incomeTax(taxable) {
+  if (taxable <= 0) return 0;
+  let rate, deduction;
+  if (taxable <= 1950000) { rate = 0.0510; deduction = 0; }
+  else if (taxable <= 3300000) { rate = 0.1021; deduction = 97500; }
+  else if (taxable <= 6950000) { rate = 0.2042; deduction = 427500; }
+  else if (taxable <= 9000000) { rate = 0.2348; deduction = 636000; }
+  else if (taxable <= 18000000) { rate = 0.3369; deduction = 1536000; }
+  else if (taxable <= 40000000) { rate = 0.4084; deduction = 2796000; }
+  else { rate = 0.4595; deduction = 4796000; }
+  return Math.max(0, taxable * rate - deduction);
+}
+
+// 1年目の節税効果（経費=副業売上のフルと仮定→赤字損益通算）
+function taxBackY1(income, sub_revenue) {
+  // 経費なし：本業のみ
+  const taxableNo = Math.max(0, income - income * 0.1523 - 480000);
+  const taxNo = incomeTax(taxableNo) + Math.round(taxableNo * 0.10);
+  // 経費あり：副業売上を全額経費でオフセット → 副業利益0、青色控除65万
+  const totalIncome = income; // 副業利益0想定（売上=経費）
+  const taxableYes = Math.max(0, totalIncome - income * 0.1523 - 650000 - 480000);
+  const taxYes = incomeTax(taxableYes) + Math.round(taxableYes * 0.10);
+  return Math.max(0, taxNo - taxYes);
+}
+
+function run() {
+  const age = parseInt(document.getElementById('age').value) || 38;
+  const income = parseInt(document.getElementById('income').value) || 3500000;
+  const savings = parseInt(document.getElementById('savings').value) || 800000;
+  const goal = parseInt(document.getElementById('goal').value) || 50000;
+  const subAnnual = goal * 12;
+
+  // 1年目節税効果
+  const taxBack = taxBackY1(income, subAnnual);
+
+  // 65歳までシミュレーション
+  const yearsTo65 = 65 - age;
+  const labels = [];
+  const noArr = [];
+  const yesArr = [];
+
+  let cumNo = savings;
+  let cumYes = savings;
+
+  for (let n = 0; n <= yearsTo65; n++) {
+    const yr = 2026 + n;
+    const ageN = age + n;
+    labels.push(ageN + '歳');
+
+    const sr = socialRate(yr);
+    // 本業手取り（社保＋税ざっくり）
+    const salaryTakeHome = income * Math.pow(1.015, n) * (1 - sr) * (yr >= 2027 ? 0.99 : 1) * 0.85;
+    // 生活費（年収×0.65 + 物価上昇）
+    const cost = income * 0.65 * Math.pow(1.025, n);
+    // 余剰
+    const surplusNo = salaryTakeHome - cost;
+    const surplusYes = surplusNo + (subAnnual * 0.80) + (n === 0 ? taxBack : 0);
+
+    cumNo += surplusNo;
+    cumYes += surplusYes;
+    noArr.push(Math.round(cumNo));
+    yesArr.push(Math.round(cumYes));
+  }
+
+  // 表示
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('taxBack').textContent = '+' + Math.round(taxBack).toLocaleString() + '円';
+
+  // テーブル
+  const checkpoints = [5, 10, 20, yearsTo65];
+  const tbody = document.getElementById('ageTable');
+  tbody.innerHTML = '';
+  checkpoints.forEach(yrAdd => {
+    if (yrAdd >= labels.length) yrAdd = labels.length - 1;
+    const idx = yrAdd;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${age + idx}歳</td>
+      <td class="no">${fmtPlain(noArr[idx])}</td>
+      <td class="yes">${fmtPlain(yesArr[idx])}</td>
+      <td class="diff">${fmt(yesArr[idx] - noArr[idx])}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // チャート
+  if (chartInstance) chartInstance.destroy();
+  const ctx = document.getElementById('chart');
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: '副業しない',
+          data: noArr,
+          borderColor: '#C77F75',
+          backgroundColor: 'rgba(199,127,117,0.10)',
+          fill: false,
+          tension: 0.3,
+          borderWidth: 2.5,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+        },
+        {
+          label: '副業する',
+          data: yesArr,
+          borderColor: '#7AA8C2',
+          backgroundColor: 'rgba(122,168,194,0.15)',
+          fill: 'origin',
+          tension: 0.3,
+          borderWidth: 3,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#2C3E50', font: { size: 12 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: (c) => c.dataset.label + ': ' + c.parsed.y.toLocaleString() + '円'
+          }
+        }
+      },
+      scales: {
+        y: {
+          ticks: {
+            color: '#6B7A8F',
+            callback: (v) => {
+              if (Math.abs(v) >= 10000000) return (v / 10000000).toFixed(1) + '千万';
+              if (Math.abs(v) >= 10000) return Math.round(v / 10000) + '万';
+              return v;
+            }
+          },
+          grid: { color: '#E0E5EC' }
+        },
+        x: {
+          ticks: {
+            color: '#6B7A8F',
+            maxTicksLimit: 8,
+          },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+
+  // 結果へスクロール
+  setTimeout(() => {
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+</script>
+</body>
+</html>
