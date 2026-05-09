@@ -29,18 +29,15 @@
   }
   .wrap{max-width:720px;margin:0 auto;padding:24px 18px 80px}
 
-  /* Hero */
   .hero{text-align:center;padding:32px 12px 24px}
   .hero .kicker{font-size:11px;letter-spacing:.18em;color:var(--pink);font-weight:700}
   .hero h1{font-size:clamp(22px,5vw,28px);margin:10px 0 10px;letter-spacing:.02em;line-height:1.5;font-weight:700}
   .hero .lead{color:var(--sub);font-size:14px;line-height:1.8}
 
-  /* Card */
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 20px;margin:16px 0;box-shadow:0 1px 0 rgba(0,0,0,.02)}
   .card h2{margin:0 0 8px;font-size:17px;letter-spacing:.02em;font-weight:700}
   .card .sub{color:var(--sub);font-size:13px;margin-bottom:14px;line-height:1.7}
 
-  /* Form */
   .form-row{margin:14px 0}
   .form-row label{display:block;font-size:13px;color:var(--ink);font-weight:600;margin-bottom:6px}
   .form-row input, .form-row select{
@@ -52,7 +49,7 @@
   .form-row input:focus, .form-row select:focus{
     outline:none;border-color:var(--pink);
   }
-  .form-row .hint{font-size:11px;color:var(--sub);margin-top:4px}
+  .form-row .hint{font-size:11px;color:var(--sub);margin-top:4px;line-height:1.6}
   .form-row select{
     background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3e%3cpath fill='%236B7A8F' d='M6 8L0 0h12z'/%3e%3c/svg%3e");
     background-repeat:no-repeat;
@@ -69,10 +66,8 @@
   .btn:hover{background:#A86A60}
   .btn:active{transform:translateY(1px)}
 
-  /* Result hidden by default */
   #result{display:none}
 
-  /* Stat block */
   .stat-hero{
     text-align:center;padding:24px 16px;
     background:linear-gradient(180deg,var(--pink-soft),#fff);
@@ -83,7 +78,12 @@
   .stat-hero .value{font-size:clamp(28px,7vw,40px);color:var(--pink);font-weight:800;letter-spacing:-.02em;margin:6px 0;line-height:1.1}
   .stat-hero .note{font-size:12px;color:var(--sub)}
 
-  /* Comparison table */
+  .stat-blue{
+    background:linear-gradient(180deg,var(--blue-soft),#fff);
+    border:1px solid var(--blue-bg);
+  }
+  .stat-blue .value{color:var(--blue)}
+
   table.compare{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
   table.compare th{
     background:var(--blue-soft);color:var(--ink);font-weight:600;
@@ -97,10 +97,8 @@
   table.compare td.yes{background:var(--blue-soft);color:var(--blue);font-weight:700}
   table.compare td.diff{background:var(--yellow);color:var(--pink);font-weight:800}
 
-  /* Chart */
   .chart-box{position:relative;height:300px;margin-top:14px}
 
-  /* Closing message (no button) */
   .closing-soft{
     background:var(--blue-soft);border-radius:14px;padding:24px 22px;margin-top:24px;
     border-left:3px solid var(--blue);
@@ -119,6 +117,14 @@
   .reche-fact ul{margin:0;padding-left:18px}
   .reche-fact li{margin:3px 0;line-height:1.7}
 
+  .repay-msg{
+    background:var(--blue-soft);border-radius:10px;padding:14px 16px;margin:12px 0;
+    font-size:14px;color:var(--ink);text-align:center;line-height:1.8;
+  }
+  .repay-msg .big{
+    color:var(--blue);font-weight:800;font-size:18px;
+  }
+
   footer{margin-top:40px;text-align:center;font-size:11px;color:var(--sub);line-height:1.8}
   footer a{color:var(--sub);text-decoration:underline}
 
@@ -131,16 +137,14 @@
 <body>
 <div class="wrap">
 
-  <!-- Hero -->
   <header class="hero">
     <div class="kicker">FUTURE SIMULATOR</div>
     <h1>あなたの未来を、3分で見える化</h1>
-    <p class="lead">副業を始めた自分と、何もしなかった自分。<br>65歳までの差を、あなたの数字で確かめてみてください。</p>
+    <p class="lead">副業を始めた自分と、何もしなかった自分。<br>借金や貯金が、65歳までにどう変わるか。<br>あなたの数字で確かめてみてください。</p>
   </header>
 
-  <!-- 入力フォーム -->
   <div class="card">
-    <h2>4つの質問に答えるだけ</h2>
+    <h2>6つの質問に答えるだけ</h2>
     <p class="sub">数字はあくまで概算です。正確じゃなくても大丈夫。</p>
 
     <div class="form-row">
@@ -161,7 +165,13 @@
     </div>
 
     <div class="form-row">
-      <label for="goal">④副業の月収目標（純利益・経費控除後）</label>
+      <label for="debt">④現在の借金・ローン残高</label>
+      <input id="debt" type="number" inputmode="numeric" value="2000000" step="100000" />
+      <div class="hint">住宅・車・奨学金・スクールローン・カードリボなどの合計（なければ0）</div>
+    </div>
+
+    <div class="form-row">
+      <label for="goal">⑤副業の月収目標（純利益・経費控除後）</label>
       <select id="goal">
         <option value="30000">3万円</option>
         <option value="50000" selected>5万円</option>
@@ -169,10 +179,15 @@
       </select>
     </div>
 
+    <div class="form-row">
+      <label for="expense">⑥経費計上できる年間支出</label>
+      <input id="expense" type="number" inputmode="numeric" value="800000" step="100000" />
+      <div class="hint">スクール代・コンサル代・教材費・通信費など、副業のために使った金額の合計</div>
+    </div>
+
     <button class="btn" onclick="run()">未来を見てみる</button>
   </div>
 
-  <!-- 結果 -->
   <div id="result">
 
     <p class="scroll-hint">— あなたの結果 —</p>
@@ -182,23 +197,31 @@
       <h2>今年すぐ</h2>
       <p class="sub">副業を始めて、確定申告で経費計上したら…</p>
       <div class="stat-hero">
-        <div class="label">今年の手元に戻る金額（節税）</div>
+        <div class="label">今年の手元に戻る金額</div>
         <div class="value" id="taxBack">+0円</div>
-        <div class="note">※ 1年目の確定申告ボーナス</div>
+        <div class="note">経費計上による節税効果（1年目の確定申告ボーナス）</div>
       </div>
     </div>
 
-    <!-- 2. 65歳までの推移 -->
+    <!-- 2. 借金完済 -->
+    <div class="card">
+      <h2>借金・ローンの返済シミュレーション</h2>
+      <p class="sub">副業した場合と、しなかった場合で、いつ完済できるか</p>
+      <div class="chart-box"><canvas id="debtChart"></canvas></div>
+      <div class="repay-msg" id="repayMsg"></div>
+    </div>
+
+    <!-- 3. 65歳までの推移 -->
     <div class="card">
       <h2>65歳までの貯金推移</h2>
       <p class="sub">副業しなかった場合（ピンク）と、副業した場合（ブルー）</p>
       <div class="chart-box"><canvas id="chart"></canvas></div>
     </div>
 
-    <!-- 3. 年齢別テーブル -->
+    <!-- 4. 年齢別テーブル -->
     <div class="card">
-      <h2>年齢ごとの差を見る</h2>
-      <p class="sub">5年・10年・20年・65歳での貯金の差</p>
+      <h2>年齢ごとの貯金の差</h2>
+      <p class="sub">5年・10年・20年・65歳の時点で、貯金にこれだけ差が出ます</p>
       <table class="compare">
         <thead>
           <tr>
@@ -212,7 +235,7 @@
       </table>
     </div>
 
-    <!-- 4. Re:che 実数値 -->
+    <!-- 5. Re:che 実数値 -->
     <div class="card">
       <div class="reche-fact">
         <div class="ttl">参考：在宅で取り組むスクール卒業生62名のデータ</div>
@@ -224,10 +247,11 @@
       </div>
     </div>
 
-    <!-- クロージング（押し売りなし） -->
+    <!-- クロージング -->
     <div class="closing-soft">
       <p class="lead">ここまで触ってみていただけたら、もう半分終わってます。</p>
-      <p>数字の細かい中身や、あなたの状況に合った計画は、<br>
+      <p>節税の細かい中身や、借金の最短返済プラン、<br>
+      あなたの状況に合った計画は、<br>
       個別のトレーニングで一緒に整理していきます。</p>
       <p>気になることがあれば、いつでもどうぞ。</p>
       <p class="sign">— Merone プロモーション事業部</p>
@@ -246,6 +270,7 @@
 
 <script>
 let chartInstance = null;
+let debtChartInstance = null;
 
 function fmt(n) {
   if (n === 0) return '0円';
@@ -259,7 +284,6 @@ function fmtPlain(n) {
   return Math.round(n).toLocaleString() + '円';
 }
 
-// 社保料率（年度別）
 function socialRate(year) {
   if (year >= 2030) return 0.1620;
   if (year >= 2028) return 0.1580;
@@ -268,7 +292,6 @@ function socialRate(year) {
   return 0.1500;
 }
 
-// 累進所得税 + 復興税
 function incomeTax(taxable) {
   if (taxable <= 0) return 0;
   let rate, deduction;
@@ -282,14 +305,13 @@ function incomeTax(taxable) {
   return Math.max(0, taxable * rate - deduction);
 }
 
-// 1年目の節税効果（経費=副業売上のフルと仮定→赤字損益通算）
-function taxBackY1(income, sub_revenue) {
-  // 経費なし：本業のみ
+// 1年目の節税効果：経費計上による本業税減少
+function taxBackY1(income, expense) {
+  // 経費なしの場合
   const taxableNo = Math.max(0, income - income * 0.1523 - 480000);
   const taxNo = incomeTax(taxableNo) + Math.round(taxableNo * 0.10);
-  // 経費あり：副業売上を全額経費でオフセット → 副業利益0、青色控除65万
-  const totalIncome = income; // 副業利益0想定（売上=経費）
-  const taxableYes = Math.max(0, totalIncome - income * 0.1523 - 650000 - 480000);
+  // 経費ありの場合（青色控除65万＋経費）
+  const taxableYes = Math.max(0, income - income * 0.1523 - 650000 - 480000 - expense);
   const taxYes = incomeTax(taxableYes) + Math.round(taxableYes * 0.10);
   return Math.max(0, taxNo - taxYes);
 }
@@ -298,20 +320,35 @@ function run() {
   const age = parseInt(document.getElementById('age').value) || 38;
   const income = parseInt(document.getElementById('income').value) || 3500000;
   const savings = parseInt(document.getElementById('savings').value) || 800000;
+  const debt = parseInt(document.getElementById('debt').value) || 0;
   const goal = parseInt(document.getElementById('goal').value) || 50000;
+  const expense = parseInt(document.getElementById('expense').value) || 0;
   const subAnnual = goal * 12;
 
-  // 1年目節税効果
-  const taxBack = taxBackY1(income, subAnnual);
+  // 1年目節税効果（経費を反映）
+  const taxBack = taxBackY1(income, expense);
 
   // 65歳までシミュレーション
   const yearsTo65 = 65 - age;
   const labels = [];
   const noArr = [];
   const yesArr = [];
+  const debtNoArr = [];
+  const debtYesArr = [];
 
   let cumNo = savings;
   let cumYes = savings;
+  let debtNo = debt;
+  let debtYes = debt;
+
+  // 借金返済ロジック
+  // 副業しない場合：年収の5%を返済（残高残る限り）
+  // 副業する場合：年収の5%＋副業手取りの50%を返済
+  const annualRepayBase = income * 0.05;
+  const annualRepayBoost = subAnnual * 0.5;
+
+  let completionNo = null;
+  let completionYes = null;
 
   for (let n = 0; n <= yearsTo65; n++) {
     const yr = 2026 + n;
@@ -319,13 +356,31 @@ function run() {
     labels.push(ageN + '歳');
 
     const sr = socialRate(yr);
-    // 本業手取り（社保＋税ざっくり）
     const salaryTakeHome = income * Math.pow(1.015, n) * (1 - sr) * (yr >= 2027 ? 0.99 : 1) * 0.85;
-    // 生活費（年収×0.65 + 物価上昇）
     const cost = income * 0.65 * Math.pow(1.025, n);
-    // 余剰
-    const surplusNo = salaryTakeHome - cost;
-    const surplusYes = surplusNo + (subAnnual * 0.80) + (n === 0 ? taxBack : 0);
+
+    // 借金返済（金利3%/年複利）
+    if (debtNo > 0) {
+      debtNo = debtNo * 1.03 - annualRepayBase;
+      if (debtNo < 0) debtNo = 0;
+    }
+    if (debtNo === 0 && completionNo === null) completionNo = ageN;
+
+    if (debtYes > 0) {
+      debtYes = debtYes * 1.03 - (annualRepayBase + annualRepayBoost);
+      if (debtYes < 0) debtYes = 0;
+    }
+    if (debtYes === 0 && completionYes === null) completionYes = ageN;
+
+    debtNoArr.push(Math.round(debtNo));
+    debtYesArr.push(Math.round(debtYes));
+
+    // 貯金推移
+    // 副業しない場合：手取り - 生活費 - 返済
+    const surplusNo = salaryTakeHome - cost - (debtNoArr[n] > 0 || n === 0 ? annualRepayBase : 0);
+    // 副業する場合：手取り + 副業手取り + 1年目節税 - 生活費 - 返済（ブースト分）
+    const subTakeHome = subAnnual * 0.80;
+    const surplusYes = salaryTakeHome + subTakeHome + (n === 0 ? taxBack : 0) - cost - (debtYesArr[n] > 0 || n === 0 ? annualRepayBase + annualRepayBoost : 0);
 
     cumNo += surplusNo;
     cumYes += surplusYes;
@@ -337,7 +392,86 @@ function run() {
   document.getElementById('result').style.display = 'block';
   document.getElementById('taxBack').textContent = '+' + Math.round(taxBack).toLocaleString() + '円';
 
-  // テーブル
+  // 完済メッセージ
+  const repayMsg = document.getElementById('repayMsg');
+  if (debt === 0) {
+    repayMsg.innerHTML = '<p>借金がない場合、このシミュレーションはスキップされます。</p>';
+  } else {
+    let msg = '';
+    if (completionYes && completionNo) {
+      const diff = completionNo - completionYes;
+      msg = `<p>副業しない場合、完済は <span class="big">${completionNo}歳</span></p>` +
+            `<p>副業した場合、完済は <span class="big">${completionYes}歳</span></p>` +
+            (diff > 0 ? `<p style="margin-top:10px;font-weight:700">— ${diff}年早く、借金から自由になれます</p>` : '');
+    } else if (completionYes && !completionNo) {
+      msg = `<p>副業した場合、<span class="big">${completionYes}歳</span> で完済できます。</p>` +
+            `<p>副業しない場合、65歳までに完済しきれません。</p>`;
+    } else {
+      msg = '<p>このペースだと、65歳までに完済が難しい計算になります。</p>';
+    }
+    repayMsg.innerHTML = msg;
+  }
+
+  // 借金チャート
+  if (debtChartInstance) debtChartInstance.destroy();
+  if (debt > 0) {
+    debtChartInstance = new Chart(document.getElementById('debtChart'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: '副業しない場合',
+            data: debtNoArr,
+            borderColor: '#C77F75',
+            backgroundColor: 'rgba(199,127,117,0.10)',
+            fill: false,
+            tension: 0.3,
+            borderWidth: 2.5,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          },
+          {
+            label: '副業する場合',
+            data: debtYesArr,
+            borderColor: '#7AA8C2',
+            backgroundColor: 'rgba(122,168,194,0.15)',
+            fill: false,
+            tension: 0.3,
+            borderWidth: 3,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { intersect: false, mode: 'index' },
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#2C3E50', font: { size: 12 } } },
+          tooltip: { callbacks: { label: (c) => c.dataset.label + ': ' + c.parsed.y.toLocaleString() + '円' } }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: '#6B7A8F',
+              callback: (v) => {
+                if (Math.abs(v) >= 10000) return Math.round(v / 10000) + '万';
+                return v;
+              }
+            },
+            grid: { color: '#E0E5EC' }
+          },
+          x: { ticks: { color: '#6B7A8F', maxTicksLimit: 8 }, grid: { display: false } }
+        }
+      }
+    });
+  } else {
+    document.getElementById('debtChart').parentElement.style.display = 'none';
+  }
+
+  // 年齢別テーブル
   const checkpoints = [5, 10, 20, yearsTo65];
   const tbody = document.getElementById('ageTable');
   tbody.innerHTML = '';
@@ -354,10 +488,9 @@ function run() {
     tbody.appendChild(tr);
   });
 
-  // チャート
+  // 貯金推移チャート
   if (chartInstance) chartInstance.destroy();
-  const ctx = document.getElementById('chart');
-  chartInstance = new Chart(ctx, {
+  chartInstance = new Chart(document.getElementById('chart'), {
     type: 'line',
     data: {
       labels: labels,
@@ -387,19 +520,11 @@ function run() {
       ]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+      responsive: true, maintainAspectRatio: false,
       interaction: { intersect: false, mode: 'index' },
       plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { color: '#2C3E50', font: { size: 12 } }
-        },
-        tooltip: {
-          callbacks: {
-            label: (c) => c.dataset.label + ': ' + c.parsed.y.toLocaleString() + '円'
-          }
-        }
+        legend: { position: 'bottom', labels: { color: '#2C3E50', font: { size: 12 } } },
+        tooltip: { callbacks: { label: (c) => c.dataset.label + ': ' + c.parsed.y.toLocaleString() + '円' } }
       },
       scales: {
         y: {
@@ -413,18 +538,11 @@ function run() {
           },
           grid: { color: '#E0E5EC' }
         },
-        x: {
-          ticks: {
-            color: '#6B7A8F',
-            maxTicksLimit: 8,
-          },
-          grid: { display: false }
-        }
+        x: { ticks: { color: '#6B7A8F', maxTicksLimit: 8 }, grid: { display: false } }
       }
     }
   });
 
-  // 結果へスクロール
   setTimeout(() => {
     document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
